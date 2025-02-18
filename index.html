@@ -10,7 +10,7 @@
   <div id="3d-graph"></div>
 
   <script>
-    const driver = neo4j.driver("neo4j+s://7714be1a.databases.neo4j.io", neo4j.auth.basic("neo4j", "lwW-hWpruNTNNrD-gCAMreXMZcUlAFcrjxmaeL94ZzM"),{encrypted: false});
+    const driver = neo4j.driver("neo4j+s://7714be1a.databases.neo4j.io", neo4j.auth.basic("neo4j", "lwW-hWpruNTNNrD-gCAMreXMZcUlAFcrjxmaeL94ZzM"));
 	const session = driver.session({database:"neo4j"});
 	const start = new Date()
     session
