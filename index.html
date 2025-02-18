@@ -11,21 +11,35 @@
 
   <script>
     const driver = neo4j.driver("neo4j+s://7714be1a.databases.neo4j.io", neo4j.auth.basic("neo4j", "lwW-hWpruNTNNrD-gCAMreXMZcUlAFcrjxmaeL94ZzM"));
-	const session = driver.session({database:"neo4j"});
-	const start = new Date()
-    session
-      .run('MATCH (u:User)-[r:CONNECTED_TO]->(v:User) RETURN u.name AS source, v.name AS target', {limit: neo4j.int(5000)})
-      .then(function (result) {
-        const links = result.records.map(r => { return {source:r.get('source').toNumber(), target:r.get('target').toNumber()}});        
-        session.close();
-        console.log(links.length+" links loaded in "+(new Date()-start)+" ms.")
-        const ids = new Set()
-        links.forEach(l => {ids.add(l.source);ids.add(l.target);});
-        const gData = { nodes: Array.from(ids).map(id => {return {id}}), links: links}
-        const Graph = ForceGraph3D()(document.getElementById('3d-graph')).graphData(gData);
-      })
-      .catch(function (error) {
-        console.log(error);
+	const session = driver.session({ database: "neo4j" });
+const start = new Date();
+
+session
+  .run(
+    'MATCH (u:User)-[r:CONNECTED_TO]->(v:User) RETURN u.name AS source, v.name AS target LIMIT $limit', 
+    { limit: neo4j.int(5000) }
+  )
+  .then(function (result) {
+    console.log(result.records.map(r => r.toObject())); // Debugging output
+
+    // No need for .toNumber() since names are strings
+    const links = result.records.map(r => ({ 
+      source: r.get('source'), 
+      target: r.get('target')  
+    }));
+
+    session.close();
+    console.log(`${links.length} links loaded in ${new Date() - start} ms.`);
+
+    const ids = new Set();
+    links.forEach(l => { ids.add(l.source); ids.add(l.target); });
+
+    const gData = { nodes: Array.from(ids).map(id => ({ id })), links };
+    
+    // Initialize the 3D graph
+    ForceGraph3D()(document.getElementById('3d-graph')).graphData(gData);
+  })
+  .catch(error => console.error("Error running query:", error));
       });
   </script>
 </body>
