@@ -1,11 +1,12 @@
 <head>
   <style>
-    body { margin: 0; }
     #info-panel {
-      position: absolute;
-      top: 20%;
+      position: fixed;
+      top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
+      width: 90%; /* Adjust for smaller screens */
+      max-width: 400px; /* Prevent it from being too large */
       padding: 20px;
       background-color: white;
       border: 1px solid black;
@@ -13,14 +14,28 @@
       z-index: 1000;
       display: none;
       text-align: center;
+      border-radius: 10px;
     }
-    #info-panel button {
-      margin-top: 10px;
-    }
-  </style>
 
-  <script src="//unpkg.com/3d-force-graph"></script>
-  <script src="https://unpkg.com/neo4j-driver"></script>
+/* Make sure the text and button are also responsive */
+#info-panel button {
+  margin-top: 10px;
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+}
+
+/* Responsive styles */
+@media (max-width: 600px) {
+  #info-panel {
+    width: 95%;
+    padding: 15px;
+  }
+}
+</style>
+
+<script src="//unpkg.com/3d-force-graph"></script>
+<script src="https://unpkg.com/neo4j-driver"></script>
 </head>
 
 <body>
@@ -33,54 +48,54 @@
     const start = new Date();
 
     session
-      .run(
-        'MATCH (u:User)-[r:CONNECTED_TO]->(v:User) RETURN u.name AS source, u.role AS sourceRole, u.title AS sourceTitle, u.website AS sourceWebsite, v.name AS target, v.role AS role, v.title AS title, v.website AS website LIMIT $limit', 
-        { limit: neo4j.int(5000) }
+    .run(
+      'MATCH (u:User)-[r:CONNECTED_TO]->(v:User) RETURN u.name AS source, u.role AS sourceRole, u.title AS sourceTitle, u.website AS sourceWebsite, v.name AS target, v.role AS role, v.title AS title, v.website AS website LIMIT $limit', 
+      { limit: neo4j.int(5000) }
       )
-      .then(function (result) {
-        const links = result.records.map(r => ({ 
-          source: r.get('source'), 
-          target: r.get('target')  
-        }));
+    .then(function (result) {
+      const links = result.records.map(r => ({ 
+        source: r.get('source'), 
+        target: r.get('target')  
+      }));
 
-        const nodesMap = new Map();
+      const nodesMap = new Map();
 
-        result.records.forEach(r => {
-          const addNode = (id, role, title, website) => {
-            if (!nodesMap.has(id)) {
-              nodesMap.set(id, { id, name: id, role, title, website });
-            }
-          };
+      result.records.forEach(r => {
+        const addNode = (id, role, title, website) => {
+          if (!nodesMap.has(id)) {
+            nodesMap.set(id, { id, name: id, role, title, website });
+          }
+        };
 
-          addNode(r.get('source'), r.get('sourceRole'), r.get('sourceTitle'), r.get('sourceWebsite'));
-          addNode(r.get('target'), r.get('role'), r.get('title'), r.get('website'));
-        });
+        addNode(r.get('source'), r.get('sourceRole'), r.get('sourceTitle'), r.get('sourceWebsite'));
+        addNode(r.get('target'), r.get('role'), r.get('title'), r.get('website'));
+      });
 
-        const nodes = Array.from(nodesMap.values());
+      const nodes = Array.from(nodesMap.values());
 
-        const gData = { nodes, links };
+      const gData = { nodes, links };
 
-        const Graph = ForceGraph3D()(document.getElementById('3d-graph'))
-          .graphData(gData)
-          .nodeLabel(node => node.role || 'N/A')
-          .onNodeHover(node => {
-            Graph.nodeLabel(node ? (n => n.title || n.role || 'N/A') : (n => n.role || 'N/A'));
-          })
-          .onNodeClick(node => {
-            const infoPanel = document.getElementById('info-panel');
-            infoPanel.innerHTML = `
+      const Graph = ForceGraph3D()(document.getElementById('3d-graph'))
+      .graphData(gData)
+      .nodeLabel(node => node.role || 'N/A')
+      .onNodeHover(node => {
+        Graph.nodeLabel(node ? (n => n.title || n.role || 'N/A') : (n => n.role || 'N/A'));
+      })
+      .onNodeClick(node => {
+        const infoPanel = document.getElementById('info-panel');
+        infoPanel.innerHTML = `
               <h3>Network Info</h3>
               <p><strong>Name:</strong> ${node.name}</p>
               <p><strong>Title:</strong> ${node.title || 'N/A'}</p>
               <p><strong>Role:</strong> ${node.role || 'N/A'}</p>
-              <p><strong>Website:</strong> ${node.website && node.website !== '' ? `<a href="${node.website}" target="_blank" rel="noopener noreferrer">${node.website.length > 30 ? `${node.website.substring(0, 30)}...` : node.website}</a>` : ''}</p>
+          <p><strong>Website:</strong> ${node.website && node.website !== '' ? `<a href="${node.website}" target="_blank" rel="noopener noreferrer">${node.website.length > 30 ? `${node.website.substring(0, 30)}...` : node.website}</a>` : ''}</p>
               <button onclick="document.getElementById('info-panel').style.display='none'">Close</button>
-            `;
-            infoPanel.style.display = 'block';
-          });
+        `;
+        infoPanel.style.display = 'block';
+      });
 
-        session.close();
-      })
-      .catch(error => console.error("Error running query:", error));
+      session.close();
+    })
+    .catch(error => console.error("Error running query:", error));
   </script>
 </body>
