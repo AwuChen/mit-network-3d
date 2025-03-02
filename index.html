@@ -13,8 +13,6 @@
       z-index: 1000;
       display: none;
       text-align: center;
-      width: 80%;
-      max-width: 400px;
     }
     #info-panel button {
       margin-top: 10px;
@@ -23,6 +21,9 @@
 
   <script src="//unpkg.com/3d-force-graph"></script>
   <script src="https://unpkg.com/neo4j-driver"></script>
+  <script type="module">
+    import SpriteText from "https://esm.sh/three-spritetext";
+  </script>
 </head>
 
 <body>
@@ -64,9 +65,12 @@
 
         const Graph = ForceGraph3D()(document.getElementById('3d-graph'))
           .graphData(gData)
-          .nodeLabel(node => node.role || 'N/A')
-          .onNodeHover(node => {
-            Graph.nodeLabel(node ? (n => n.title || n.role || 'N/A') : (n => n.role || 'N/A'));
+          .nodeThreeObject(node => {
+            const sprite = new SpriteText(node.role || 'N/A');
+            sprite.material.depthWrite = false; // make sprite background transparent
+            sprite.color = 'black';
+            sprite.textHeight = 8;
+            return sprite;
           })
           .onNodeClick(node => {
             const infoPanel = document.getElementById('info-panel');
