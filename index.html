@@ -2,28 +2,60 @@
   <style>
     #info-panel {
   position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 90%; /* Make it responsive */
-  max-width: 400px; /* Prevent it from getting too wide on larger screens */
-  padding: 20px;
-  background-color: white;
-  border: 1px solid black;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
-  z-index: 1000;
+  top: 0;
+  left: 0;
+  width: 100vw; /* Full width */
+  height: 100vh; /* Full height */
+  background-color: rgba(255, 255, 255, 0.95); /* Slight transparency for better readability */
   display: none;
   text-align: center;
-  font-size: 1rem; /* Ensure text is readable */
+  padding: 20px;
+  box-shadow: none; /* Remove unnecessary shadow */
+  overflow-y: auto; /* Scroll if content overflows */
+  font-size: 1.5rem; /* Increase readability */
+  z-index: 1000;
 }
 
-@media (max-width: 600px) {
+#info-panel h3 {
+  font-size: 2rem; /* Make headings larger */
+}
+
+#info-panel p {
+  font-size: 1.5rem; /* Increase text size */
+}
+
+#info-panel button {
+  font-size: 1.5rem;
+  padding: 15px 25px;
+  margin-top: 20px;
+  border: none;
+  background-color: black;
+  color: white;
+  border-radius: 10px;
+  cursor: pointer;
+  width: 90%;
+  max-width: 300px;
+}
+
+#info-panel button:hover {
+  background-color: #444;
+}
+
+@media (min-width: 600px) {
   #info-panel {
-    width: 95%;
-    max-width: 90%; /* Adjust width for smaller screens */
-    font-size: 1.2rem; /* Increase font size for better readability */
-    padding: 15px;
+    width: 80vw; /* Make it smaller on desktop */
+    height: auto;
+    max-width: 500px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 30px;
+    border-radius: 15px;
+    background-color: white;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3);
   }
+}
+
 </style>
 
 <script src="//unpkg.com/3d-force-graph"></script>
