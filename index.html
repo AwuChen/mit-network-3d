@@ -63,7 +63,9 @@
         const Graph = ForceGraph3D()(document.getElementById('3d-graph'))
           .graphData(gData)
           .nodeLabel(node => node.role || 'N/A')
-          .onNodeHover(node => Graph.nodeLabel(node ? node.title : ''))
+          .onNodeHover(node => {
+            Graph.nodeLabel(node ? (n => n.title || n.role || 'N/A') : (n => n.role || 'N/A'));
+          })
           .onNodeClick(node => {
             const infoPanel = document.getElementById('info-panel');
             infoPanel.innerHTML = `
