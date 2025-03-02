@@ -1,29 +1,29 @@
 <head>
   <style>
     #info-panel {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 90%; /* Adjust for smaller screens */
-      max-width: 400px; /* Prevent it from being too large */
-      padding: 20px;
-      background-color: white;
-      border: 1px solid black;
-      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
-      z-index: 1000;
-      display: none;
-      text-align: center;
-      border-radius: 10px;
-    }
-
-/* Make sure the text and button are also responsive */
-#info-panel button {
-  margin-top: 10px;
-  width: 100%;
-  padding: 10px;
-  font-size: 16px;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%; /* Make it responsive */
+  max-width: 400px; /* Prevent it from getting too wide on larger screens */
+  padding: 20px;
+  background-color: white;
+  border: 1px solid black;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+  z-index: 1000;
+  display: none;
+  text-align: center;
+  font-size: 1rem; /* Ensure text is readable */
 }
+
+@media (max-width: 600px) {
+  #info-panel {
+    width: 95%;
+    max-width: 90%; /* Adjust width for smaller screens */
+    font-size: 1.2rem; /* Increase font size for better readability */
+    padding: 15px;
+  }
 </style>
 
 <script src="//unpkg.com/3d-force-graph"></script>
