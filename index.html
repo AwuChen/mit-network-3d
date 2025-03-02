@@ -64,11 +64,7 @@
           .graphData(gData)
           .nodeLabel(node => node.role || 'N/A')
           .onNodeHover(node => {
-            if (node) {
-              Graph.nodeLabel(node => node.title || node.role || 'N/A');
-            } else {
-              Graph.nodeLabel(node => node.role || 'N/A');
-            }
+            Graph.nodeLabel(node ? (n => n.title || n.role || 'N/A') : (n => n.role || 'N/A'));
           })
           .onNodeClick(node => {
             const infoPanel = document.getElementById('info-panel');
