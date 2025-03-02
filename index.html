@@ -27,7 +27,7 @@
 
     session
       .run(
-        'MATCH (u:User)-[r:CONNECTED_TO]->(v:User) RETURN u.name AS source, v.name AS target, v.role AS role, v.title AS title, v.website AS website LIMIT $limit', 
+        'MATCH (u:User)-[r:CONNECTED_TO]->(v:User) RETURN u.name AS source, u.role AS sourceRole, u.title AS sourceTitle, u.website AS sourceWebsite, v.name AS target, v.role AS role, v.title AS title, v.website AS website LIMIT $limit', 
         { limit: neo4j.int(5000) }
       )
       .then(function (result) {
@@ -45,7 +45,7 @@
             }
           };
 
-          addNode(r.get('source'), null, null, null);
+          addNode(r.get('source'), r.get('sourceRole'), r.get('sourceTitle'), r.get('sourceWebsite'));
           addNode(r.get('target'), r.get('role'), r.get('title'), r.get('website'));
         });
 
