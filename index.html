@@ -68,7 +68,7 @@ import("https://esm.sh/three-spritetext").then(({ default: SpriteText }) => {
           .nodeThreeObject(node => {
             const sprite = new SpriteText(node.role || 'N/A');
             sprite.material.depthWrite = false; // make sprite background transparent
-            sprite.color = 'black';
+            sprite.color = 'white';
             sprite.textHeight = 8;
             return sprite;
           })
