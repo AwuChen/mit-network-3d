@@ -62,7 +62,7 @@
         const nodes = Array.from(nodesMap.values());
 
         const gData = { nodes, links };
-
+import("https://esm.sh/three-spritetext").then(({ default: SpriteText }) => {
         const Graph = ForceGraph3D()(document.getElementById('3d-graph'))
           .graphData(gData)
           .nodeThreeObject(node => {
