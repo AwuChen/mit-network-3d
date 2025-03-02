@@ -36,13 +36,20 @@
           target: r.get('target')  
         }));
 
-        const nodes = result.records.map(r => ({
-          id: r.get('target'),
-          name: r.get('target'),
-          role: r.get('role'),
-          title: r.get('title'),
-          website: r.get('website')
-        }));
+        const nodesMap = new Map();
+
+        result.records.forEach(r => {
+          const addNode = (id, role, title, website) => {
+            if (!nodesMap.has(id)) {
+              nodesMap.set(id, { id, name: id, role, title, website });
+            }
+          };
+
+          addNode(r.get('source'), null, null, null);
+          addNode(r.get('target'), r.get('role'), r.get('title'), r.get('website'));
+        });
+
+        const nodes = Array.from(nodesMap.values());
 
         const gData = { nodes, links };
 
