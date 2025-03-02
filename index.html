@@ -21,9 +21,6 @@
 
   <script src="//unpkg.com/3d-force-graph"></script>
   <script src="https://unpkg.com/neo4j-driver"></script>
-  <script type="module">
-    import SpriteText from "https://esm.sh/three-spritetext";
-  </script>
 </head>
 
 <body>
@@ -62,16 +59,11 @@
         const nodes = Array.from(nodesMap.values());
 
         const gData = { nodes, links };
-import("https://esm.sh/three-spritetext").then(({ default: SpriteText }) => {
+
         const Graph = ForceGraph3D()(document.getElementById('3d-graph'))
           .graphData(gData)
-          .nodeThreeObject(node => {
-            const sprite = new SpriteText(node.role || 'N/A');
-            sprite.material.depthWrite = false; // make sprite background transparent
-            sprite.color = 'white';
-            sprite.textHeight = 8;
-            return sprite;
-          })
+          .nodeLabel(node => node.role || 'N/A')
+          .onNodeHover(node => Graph.nodeLabel(node ? node.title : ''))
           .onNodeClick(node => {
             const infoPanel = document.getElementById('info-panel');
             infoPanel.innerHTML = `
@@ -88,6 +80,5 @@ import("https://esm.sh/three-spritetext").then(({ default: SpriteText }) => {
         session.close();
       })
       .catch(error => console.error("Error running query:", error));
-    })
   </script>
 </body>
