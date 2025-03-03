@@ -3,11 +3,10 @@
     body { margin: 0; }
     @media (max-width: 768px) {
       body {
-        margin: 0;
-        font-size: 16px;
+        font-size: 40px;
       }
       #info-panel {
-        font-size: 16px;
+        font-size: 40px;
       }
     }
     #info-panel {
@@ -71,9 +70,9 @@
 
         const Graph = ForceGraph3D()(document.getElementById('3d-graph'))
           .graphData(gData)
-          .nodeLabel(node => node.role || 'N/A')
+          .nodeLabel(node => `<div style="font-size: 40px;">${node.title || node.role || 'N/A'}</div>`)
           .onNodeHover(node => {
-            Graph.nodeLabel(node ? (n => n.title || n.role || 'N/A') : (n => n.role || 'N/A'));
+            Graph.nodeLabel(node ? (n => `<div style="font-size: 40px;">${n.title || n.role || 'N/A'}</div>`) : (n => `<div style="font-size: 40px;">${n.role || 'N/A'}</div>`));
           })
           .onNodeClick(node => {
             const infoPanel = document.getElementById('info-panel');
