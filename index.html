@@ -1,80 +1,26 @@
 <head>
   <style>
+    body { margin: 0; }
     #info-panel {
-  position: absolute;
-  top: 20%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  padding: 20px;
-  background-color: white;
-  border: 1px solid black;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
-  z-index: 1000;
-  display: none;
-  text-align: center;
-  width: 90vw; /* Ensures responsiveness */
-  max-width: 400px; /* Matches desktop panel */
-}
-
-#info-panel h3 {
-  font-size: 1.5rem;
-  margin-bottom: 10px;
-}
-
-#info-panel p {
-  font-size: 1.2rem;
-  margin: 5px 0;
-}
-
-#info-panel a {
-  font-size: 1.2rem;
-  word-wrap: break-word;
-}
-
-#info-panel button {
-  font-size: 1.2rem;
-  padding: 10px 15px;
-  margin-top: 10px;
-  border: none;
-  background-color: black;
-  color: white;
-  border-radius: 8px;
-  cursor: pointer;
-  width: 100%;
-  max-width: 250px;
-}
-
-#info-panel button:hover {
-  background-color: #444;
-}
-
-/* Mobile Adjustments */
-@media (max-width: 600px) {
-  #info-panel {
-    width: 95vw;
-    max-width: 95%;
-    font-size: 1.4rem;
-    padding: 25px;
-  }
-
-  #info-panel h3 {
-    font-size: 1.8rem;
-  }
-
-  #info-panel p {
-    font-size: 1.4rem;
-  }
-
-  #info-panel button {
-    font-size: 1.4rem;
-    padding: 12px;
-  }
-}
-
+      position: absolute;
+      top: 20%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      padding: 20px;
+      background-color: white;
+      border: 1px solid black;
+      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.3);
+      z-index: 1000;
+      display: none;
+      text-align: center;
+    }
+    #info-panel button {
+      margin-top: 10px;
+    }
   </style>
 
-<script src="//unpkg.com/3d-force-graph"></script>
-<script src="https://unpkg.com/neo4j-driver"></script>
+  <script src="//unpkg.com/3d-force-graph"></script>
+  <script src="https://unpkg.com/neo4j-driver"></script>
 </head>
 
 <body>
@@ -87,54 +33,54 @@
     const start = new Date();
 
     session
-    .run(
-      'MATCH (u:User)-[r:CONNECTED_TO]->(v:User) RETURN u.name AS source, u.role AS sourceRole, u.title AS sourceTitle, u.website AS sourceWebsite, v.name AS target, v.role AS role, v.title AS title, v.website AS website LIMIT $limit', 
-      { limit: neo4j.int(5000) }
+      .run(
+        'MATCH (u:User)-[r:CONNECTED_TO]->(v:User) RETURN u.name AS source, u.role AS sourceRole, u.title AS sourceTitle, u.website AS sourceWebsite, v.name AS target, v.role AS role, v.title AS title, v.website AS website LIMIT $limit', 
+        { limit: neo4j.int(5000) }
       )
-    .then(function (result) {
-      const links = result.records.map(r => ({ 
-        source: r.get('source'), 
-        target: r.get('target')  
-      }));
+      .then(function (result) {
+        const links = result.records.map(r => ({ 
+          source: r.get('source'), 
+          target: r.get('target')  
+        }));
 
-      const nodesMap = new Map();
+        const nodesMap = new Map();
 
-      result.records.forEach(r => {
-        const addNode = (id, role, title, website) => {
-          if (!nodesMap.has(id)) {
-            nodesMap.set(id, { id, name: id, role, title, website });
-          }
-        };
+        result.records.forEach(r => {
+          const addNode = (id, role, title, website) => {
+            if (!nodesMap.has(id)) {
+              nodesMap.set(id, { id, name: id, role, title, website });
+            }
+          };
 
-        addNode(r.get('source'), r.get('sourceRole'), r.get('sourceTitle'), r.get('sourceWebsite'));
-        addNode(r.get('target'), r.get('role'), r.get('title'), r.get('website'));
-      });
+          addNode(r.get('source'), r.get('sourceRole'), r.get('sourceTitle'), r.get('sourceWebsite'));
+          addNode(r.get('target'), r.get('role'), r.get('title'), r.get('website'));
+        });
 
-      const nodes = Array.from(nodesMap.values());
+        const nodes = Array.from(nodesMap.values());
 
-      const gData = { nodes, links };
+        const gData = { nodes, links };
 
-      const Graph = ForceGraph3D()(document.getElementById('3d-graph'))
-      .graphData(gData)
-      .nodeLabel(node => node.role || 'N/A')
-      .onNodeHover(node => {
-        Graph.nodeLabel(node ? (n => n.title || n.role || 'N/A') : (n => n.role || 'N/A'));
-      })
-      .onNodeClick(node => {
-        const infoPanel = document.getElementById('info-panel');
-        infoPanel.innerHTML = `
+        const Graph = ForceGraph3D()(document.getElementById('3d-graph'))
+          .graphData(gData)
+          .nodeLabel(node => node.role || 'N/A')
+          .onNodeHover(node => {
+            Graph.nodeLabel(node ? (n => n.title || n.role || 'N/A') : (n => n.role || 'N/A'));
+          })
+          .onNodeClick(node => {
+            const infoPanel = document.getElementById('info-panel');
+            infoPanel.innerHTML = `
               <h3>Network Info</h3>
               <p><strong>Name:</strong> ${node.name}</p>
               <p><strong>Title:</strong> ${node.title || 'N/A'}</p>
               <p><strong>Role:</strong> ${node.role || 'N/A'}</p>
-          <p><strong>Website:</strong> ${node.website && node.website !== '' ? `<a href="${node.website}" target="_blank" rel="noopener noreferrer">${node.website.length > 30 ? `${node.website.substring(0, 30)}...` : node.website}</a>` : ''}</p>
+              <p><strong>Website:</strong> ${node.website && node.website !== '' ? `<a href="${node.website}" target="_blank" rel="noopener noreferrer">${node.website.length > 30 ? `${node.website.substring(0, 30)}...` : node.website}</a>` : ''}</p>
               <button onclick="document.getElementById('info-panel').style.display='none'">Close</button>
-        `;
-        infoPanel.style.display = 'block';
-      });
+            `;
+            infoPanel.style.display = 'block';
+          });
 
-      session.close();
-    })
-    .catch(error => console.error("Error running query:", error));
+        session.close();
+      })
+      .catch(error => console.error("Error running query:", error));
   </script>
 </body>
