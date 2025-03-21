@@ -68,7 +68,9 @@
 
         const gData = { nodes, links };
 
-        const Graph = ForceGraph3D()(document.getElementById('3d-graph'))
+        setTimeout(() => {
+          const Graph = ForceGraph3D()(document.getElementById('3d-graph'));
+        }, 1000);
           .graphData(gData)
           .nodeLabel(node => window.innerWidth <= 768 ? `<div style="font-size: 40px;">${node.title || node.role || 'N/A'}</div>` : node.title || node.role || 'N/A')
           .onNodeHover(node => {
